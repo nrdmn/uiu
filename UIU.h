@@ -231,6 +231,9 @@ private:
     case OutputString:
       handle_io_call.operator()<OutputString>(&UIU::output_string);
       break;
+    case LocateProtocol:
+      handle_io_call.operator()<LocateProtocol>(&UIU::locate_protocol);
+      break;
     default:
       std::terminate();
     }
@@ -252,6 +255,24 @@ private:
     auto*& interface = *machine.create_ptr<void*>((std::uint64_t)Interface);
     interface = (void*)(std::uint64_t)handle_db[Handle][protocol];
     return EFI_SUCCESS;
+  }
+
+  EFI_STATUS locate_protocol(EFI_GUID* Protocol, VOID* Registration, VOID** Interface) {
+    if (Registration != nullptr) {
+      // not implemented
+      std::terminate();
+    }
+    if (Protocol == nullptr || Interface == nullptr) {
+      return EFI_INVALID_PARAMETER;
+    }
+    auto protocol = *machine.create_ptr<EFI_GUID>((std::uint64_t)Protocol);
+    for (auto& [handle, guids] : handle_db) {
+      if (auto it = guids.find(protocol); it != guids.end()) {
+        *machine.create_ptr<void*>((std::uint64_t)Interface) = (void*)(std::uint64_t)it->second;
+        return EFI_SUCCESS;
+      }
+    }
+    return EFI_NOT_FOUND;
   }
 
   EFI_STATUS get_variable(CHAR16* VariableName, EFI_GUID* VendorGuid, UINT32* Attributes, UINTN* DataSize, VOID* Data) {

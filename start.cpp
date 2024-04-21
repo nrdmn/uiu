@@ -100,7 +100,7 @@ extern "C" [[noreturn]] EFIAPI void _start(EFI_STATUS (EFIAPI *efi_main)(EFI_HAN
 
     .ProtocolsPerHandle = EFI_PROTOCOLS_PER_HANDLE(&trap),
     .LocateHandleBuffer = EFI_LOCATE_HANDLE_BUFFER(&trap),
-    .LocateProtocol = EFI_LOCATE_PROTOCOL(&trap),
+    .LocateProtocol = uiuapifn<UIUAPITag::LocateProtocol>(),
     .InstallMultipleProtocolInterfaces = EFI_INSTALL_MULTIPLE_PROTOCOL_INTERFACES(&trap),
     .UninstallMultipleProtocolInterfaces = EFI_UNINSTALL_MULTIPLE_PROTOCOL_INTERFACES(&trap),
 

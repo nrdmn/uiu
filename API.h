@@ -16,6 +16,7 @@ enum class UIUAPITag {
   FreePool,
   LocateHandle,
   OutputString,
+  LocateProtocol,
 };
 
 template <UIUAPITag N>
@@ -61,4 +62,10 @@ template <>
 struct UIUAPIFn<UIUAPITag::OutputString> {
   using R = EFI_STATUS;
   using Args = std::tuple<EFI_SIMPLE_TEXT_OUT_PROTOCOL*, CHAR16*>;
+};
+
+template <>
+struct UIUAPIFn<UIUAPITag::LocateProtocol> {
+  using R = EFI_STATUS;
+  using Args = std::tuple<EFI_GUID*, VOID*, VOID**>;
 };
