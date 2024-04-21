@@ -34,7 +34,7 @@ extern "C" [[noreturn]] EFIAPI void _start(EFI_STATUS (EFIAPI *efi_main)(EFI_HAN
   };
 
   EFI_BOOT_SERVICES bs = {
-   .Hdr = {
+    .Hdr = {
       .Signature = EFI_BOOT_SERVICES_SIGNATURE,
       .Revision = EFI_BOOT_SERVICES_REVISION,
       .HeaderSize = sizeof(EFI_BOOT_SERVICES),
