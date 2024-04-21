@@ -238,7 +238,20 @@ private:
   }
 
   EFI_STATUS handle_protocol(EFI_HANDLE Handle, EFI_GUID* Protocol, VOID** Interface) {
-    return EFI_UNSUPPORTED;
+    if (Handle == nullptr || Protocol == nullptr || Interface == nullptr) {
+      return EFI_INVALID_PARAMETER;
+    }
+    if (!handle_db.contains(Handle)) {
+      // This case is actually not defined by the specification
+      return EFI_UNSUPPORTED;
+    }
+    const auto& protocol = *machine.create_ptr<EFI_GUID>((std::uint64_t)Protocol);
+    if (!handle_db[Handle].contains(protocol)) {
+      return EFI_UNSUPPORTED;
+    }
+    auto*& interface = *machine.create_ptr<void*>((std::uint64_t)Interface);
+    interface = (void*)(std::uint64_t)handle_db[Handle][protocol];
+    return EFI_SUCCESS;
   }
 
   EFI_STATUS get_variable(CHAR16* VariableName, EFI_GUID* VendorGuid, UINT32* Attributes, UINTN* DataSize, VOID* Data) {
@@ -273,4 +286,5 @@ public:
   Machine machine;
   std::pmr::monotonic_buffer_resource mbr;
   std::pmr::unsynchronized_pool_resource upr;
+  std::unordered_map<EFI_HANDLE, std::unordered_map<EFI_GUID, MachinePtr<void>>> handle_db;
 };
