@@ -37,10 +37,26 @@ inline bool operator==(const EFI_GUID& lhs, const EFI_GUID& rhs) noexcept {
 }
 
 inline auto format_as(const EFI_GUID& guid) {
-  return fmt::format("{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
+  auto str = fmt::format("{:08x}-{:04x}-{:04x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}",
       guid.Data1, guid.Data2, guid.Data3, guid.Data4[0], guid.Data4[1],
       guid.Data4[2], guid.Data4[3], guid.Data4[4], guid.Data4[5],
       guid.Data4[6], guid.Data4[7]);
+  if (guid == EFI_GUID(EFI_RNG_PROTOCOL_GUID)) {
+    str += " (EFI_RNG_PROTOCOL_GUID)";
+  } else if (guid == EFI_GUID(EFI_LOADED_IMAGE_PROTOCOL_GUID)) {
+    str += " (EFI_LOADED_IMAGE_PROTOCOL_GUID)";
+  } else if (guid == EFI_GUID{0xf4560cf6, 0x40ec, 0x4b4a, {0xa1, 0x92, 0xbf, 0x1d, 0x57, 0xd0, 0xb1, 0x89}}) {
+    str += " (EFI_MEMORY_ATTRIBUTE_PROTOCOL_GUID)";
+  } else if (guid == EFI_GUID{0x607f766c, 0x7455, 0x42be, {0x93, 0x0b, 0xe4, 0xd7, 0x6d, 0xb2, 0x72, 0x0f}}) {
+    str += " (EFI_TCG2_PROTOCOL_GUID)";
+  } else if (guid == EFI_GUID(EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID)) {
+    str += " (EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID)";
+  } else if (guid == EFI_GUID{0x982c298b, 0xf4fa, 0x41cb, {0xb8, 0x38, 0x77, 0xaa, 0x68, 0x8f, 0xb8, 0x39}}) {
+    str += " (EFI_UGA_PROTOCOL_GUID)";
+  } else if (guid == EFI_GUID(EFI_PCI_IO_PROTOCOL_GUID)) {
+    str += " (EFI_PCI_IO_PROTOCOL_GUID)";
+  }
+  return str;
 }
 
 inline auto format_as(const EFI_MEMORY_TYPE& memory_type) {
