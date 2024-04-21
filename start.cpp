@@ -159,5 +159,16 @@ extern "C" [[noreturn]] EFIAPI void _start(EFI_STATUS (EFIAPI *efi_main)(EFI_HAN
     .NumberOfTableEntries = 0,
     .ConfigurationTable = 0,
   };
-  uiuapifn<UIUAPITag::Exit>()(efi_main((void*)0x1, &st));
+
+  EFI_RNG_PROTOCOL rng_proto = {
+    .GetInfo = EFI_RNG_GET_INFO(&trap),
+    .GetRNG = uiuapifn<UIUAPITag::GetRNG>(),
+  };
+
+  EFI_HANDLE handle = nullptr;
+
+  EFI_GUID rng_guid = EFI_RNG_PROTOCOL_GUID;
+  uiuapifn<UIUAPITag::InstallProtocolInterface>()(&handle, &rng_guid, EFI_NATIVE_INTERFACE, (void*)&rng_proto);
+
+  uiuapifn<UIUAPITag::Exit>()(efi_main(handle, &st));
 }

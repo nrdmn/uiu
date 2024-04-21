@@ -237,6 +237,9 @@ private:
     case InstallProtocolInterface:
       handle_io_call.operator()<InstallProtocolInterface>(&UIU::install_protocol_interface);
       break;
+    case GetRNG:
+      handle_io_call.operator()<GetRNG>(&UIU::get_rng);
+      break;
     default:
       std::terminate();
     }
@@ -325,6 +328,10 @@ private:
       std::wcout << *str;
       str++;
     }
+    return EFI_SUCCESS;
+  }
+
+  EFI_STATUS get_rng(EFI_RNG_PROTOCOL*, EFI_RNG_ALGORITHM*, UINTN RNGValueLength, UINT8* RNGValue) {
     return EFI_SUCCESS;
   }
 
