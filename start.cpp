@@ -72,7 +72,7 @@ extern "C" [[noreturn]] EFIAPI void _start(EFI_STATUS (EFIAPI *efi_main)(EFI_HAN
     .CloseEvent = EFI_CLOSE_EVENT(&trap),
     .CheckEvent = EFI_CHECK_EVENT(&trap),
 
-    .InstallProtocolInterface = EFI_INSTALL_PROTOCOL_INTERFACE(&trap),
+    .InstallProtocolInterface = uiuapifn<UIUAPITag::InstallProtocolInterface>(),
     .ReinstallProtocolInterface = EFI_REINSTALL_PROTOCOL_INTERFACE(&trap),
     .UninstallProtocolInterface = EFI_UNINSTALL_PROTOCOL_INTERFACE(&trap),
     .HandleProtocol = uiuapifn<UIUAPITag::HandleProtocol>(),

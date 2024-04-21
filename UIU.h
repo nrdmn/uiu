@@ -234,6 +234,9 @@ private:
     case LocateProtocol:
       handle_io_call.operator()<LocateProtocol>(&UIU::locate_protocol);
       break;
+    case InstallProtocolInterface:
+      handle_io_call.operator()<InstallProtocolInterface>(&UIU::install_protocol_interface);
+      break;
     default:
       std::terminate();
     }
@@ -275,6 +278,28 @@ private:
     return EFI_NOT_FOUND;
   }
 
+  EFI_STATUS install_protocol_interface(EFI_HANDLE* Handle, EFI_GUID* Protocol, EFI_INTERFACE_TYPE InterfaceType, VOID* Interface) {
+    if (Handle == nullptr || Protocol == nullptr) {
+      return EFI_INVALID_PARAMETER;
+    }
+    if (InterfaceType != EFI_NATIVE_INTERFACE) {
+      return EFI_INVALID_PARAMETER;
+    }
+    auto handle = machine.create_ptr<EFI_HANDLE>((std::uint64_t)Handle);
+    if (*handle == nullptr) {
+      auto [new_handle, ok] = handle_db.insert({(EFI_HANDLE)(handle_counter++), {}});
+      if (!ok) {
+        // should never happen
+        std::terminate();
+      }
+      *handle = new_handle->first;
+    }
+    auto protocol = machine.create_ptr<EFI_GUID>((std::uint64_t)Protocol);
+    auto interface = machine.create_ptr<void>((std::uint64_t)Interface);
+    handle_db[*handle].insert({*protocol, interface});
+    return EFI_SUCCESS;
+  }
+
   EFI_STATUS get_variable(CHAR16* VariableName, EFI_GUID* VendorGuid, UINT32* Attributes, UINTN* DataSize, VOID* Data) {
     return EFI_UNSUPPORTED;
   }
@@ -308,4 +333,5 @@ public:
   std::pmr::monotonic_buffer_resource mbr;
   std::pmr::unsynchronized_pool_resource upr;
   std::unordered_map<EFI_HANDLE, std::unordered_map<EFI_GUID, MachinePtr<void>>> handle_db;
+  std::size_t handle_counter = 1;  // contains the next usable EFI_HANDLE
 };
