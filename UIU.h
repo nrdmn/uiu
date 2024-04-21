@@ -134,10 +134,13 @@ public:
       if (vcpu_run.exit_reason == KVM_EXIT_IO) {
         const auto& io = vcpu_run.io;
         if (io.direction == KVM_EXIT_IO_OUT && io.port == 0xff) {
-          if (dispatch_io_call(*this, *(short*)(machine.vcpu_run.io_data()))) {
+          auto status = dispatch_io_call(*this, *(short*)(machine.vcpu_run.io_data()));
+          if (status == IOExitStatus::Continue) {
             continue;
-          } else {
+          } else if (status == IOExitStatus::Exit) {
             break;
+          } else {
+            // trap
           }
         }
       }
@@ -159,13 +162,25 @@ public:
         break;
       }
 
-      fmt::println("{}", machine.vcpu.get_regs());
+      auto regs = machine.vcpu.get_regs();
+
+      fmt::println("{}", regs);
+      for (int i = 0; i > -20; i--) {
+        auto line = machine.create_ptr<std::uint64_t>(regs.rsp);
+        fmt::println("{:#018x} {:#x}", (std::uint64_t)(line+i), line[i]);
+      }
       break;
     }
   }
 
 private:
-  bool dispatch_io_call(UIU& uiu, short nr) {
+  enum class IOExitStatus {
+    Continue,
+    Exit,
+    Trap,
+  };
+
+  IOExitStatus dispatch_io_call(UIU& uiu, short nr) {
     auto handle_io_call = [&]<UIUAPITag T>(auto callable) {
       auto regs = machine.vcpu.get_regs();
       std::uint64_t* params = machine.create_ptr<std::uint64_t>(regs.rdx).get();
@@ -178,8 +193,10 @@ private:
 
     using enum UIUAPITag;
     switch (UIUAPITag{nr}) {
+    case Trap:
+      return IOExitStatus::Trap;
     case Exit:
-      return false;
+      return IOExitStatus::Exit;
     case HandleProtocol:
       handle_io_call.operator()<HandleProtocol>(&UIU::handle_protocol);
       break;
@@ -201,7 +218,7 @@ private:
     default:
       std::terminate();
     }
-    return true;
+    return IOExitStatus::Continue;
   }
 
   EFI_STATUS handle_protocol(EFI_HANDLE Handle, EFI_GUID* Protocol, VOID** Interface) {

@@ -8,7 +8,8 @@ extern "C" {
 }
 
 enum class UIUAPITag {
-  Exit = 0,
+  Trap,
+  Exit,
   HandleProtocol,
   GetVariable,
   AllocatePool,

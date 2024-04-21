@@ -180,23 +180,6 @@ int main(int argc, char** argv) {
   void* efi_main_kvm = (char*)0x10'0000 + load(std::move(ifs), (char*)memory + 0x10'0000);
   ((unsigned char*)memory)[0] = 0xf4;
 
-  /*EFI_LOADED_IMAGE_PROTOCOL lip{
-    .Revision = EFI_LOADED_IMAGE_PROTOCOL_REVISION,
-    .ParentHandle = (void*)0,
-    .SystemTable = &st,
-    .DeviceHandle = nullptr,  // TODO what's this?
-    .FilePath = nullptr,  // TODO what's this?
-    .LoadOptionsSize = 0,
-    .LoadOptions = nullptr,
-    .ImageBase = nullptr,  // TODO
-    .ImageSize = 0,  // TODO
-    .ImageCodeType = EfiReservedMemoryType,  // TODO
-    .ImageDataType = EfiReservedMemoryType,  // TODO
-    .Unload = nullptr,  // TODO can this be null?
-  };*/
-
-  //uiu.handle_db.emplace_back(std::unordered_map<EFI_GUID, void*>{{EFI_GUID(EFI_LOADED_IMAGE_PROTOCOL_GUID), &lip}});
-
   kvm_regs regs{
     .rax = 2,
     .rbx = 2,
