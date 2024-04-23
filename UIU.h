@@ -1,11 +1,13 @@
 #pragma once
 
 #include <algorithm>
+#include <codecvt>  // std::codecvt_utf8
 #include <cstdint>
 #include <cstring>
 #include <fmt/format.h>
-#include <iostream>  // std::wcout
+#include <locale>  // std::wstring_convert
 #include <memory_resource>
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -323,11 +325,8 @@ private:
   }
 
   EFI_STATUS output_string(EFI_SIMPLE_TEXT_OUT_PROTOCOL* This, CHAR16* String) {
-    wchar_t* str = machine.create_ptr<wchar_t>((uint64_t)String).get();
-    while (*str != L'\0') {
-      std::wcout << *str;
-      str++;
-    }
+    std::u16string_view str = machine.create_ptr<char16_t>((std::uint64_t)String).get();
+    fmt::print("{}", std::wstring_convert<std::codecvt_utf8<char16_t>, char16_t>{}.to_bytes(str.begin(), str.end()));
     return EFI_SUCCESS;
   }
 
