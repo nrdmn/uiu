@@ -128,7 +128,7 @@ extern "C" [[noreturn]] EFIAPI void _start(EFI_STATUS (EFIAPI *efi_main)(EFI_HAN
 
     .GetVariable = uiuapifn<UIUAPITag::GetVariable>(),  // 0x48
     .GetNextVariableName = EFI_GET_NEXT_VARIABLE_NAME(&trap),
-    .SetVariable = EFI_SET_VARIABLE(&trap),
+    .SetVariable = uiuapifn<UIUAPITag::SetVariable>(),
 
     .GetNextHighMonotonicCount = EFI_GET_NEXT_HIGH_MONO_COUNT(&trap),
     .ResetSystem = EFI_RESET_SYSTEM(&trap),

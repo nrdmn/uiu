@@ -242,6 +242,9 @@ private:
     case GetRNG:
       handle_io_call.operator()<GetRNG>(&UIU::get_rng);
       break;
+    case SetVariable:
+      handle_io_call.operator()<SetVariable>(&UIU::set_variable);
+      break;
     default:
       std::terminate();
     }
@@ -306,7 +309,29 @@ private:
   }
 
   EFI_STATUS get_variable(CHAR16* VariableName, EFI_GUID* VendorGuid, UINT32* Attributes, UINTN* DataSize, VOID* Data) {
-    return EFI_UNSUPPORTED;
+    // Attributes is not implemented
+
+    if (VariableName == nullptr || VendorGuid == nullptr || DataSize == nullptr) {
+      return EFI_INVALID_PARAMETER;
+    }
+    std::u16string_view variable_name = machine.create_ptr<char16_t>((std::uint64_t)VariableName).get();
+    const EFI_GUID& vendor_guid = *machine.create_ptr<EFI_GUID>((std::uint64_t)VendorGuid);
+    UINTN& data_size = *machine.create_ptr<UINTN>((std::uint64_t)DataSize);
+    if (auto it = variables.find(vendor_guid); it != variables.end()) {
+      if (auto jt = it->second.find(std::u16string{variable_name}); jt != it->second.end()) {
+        const auto& value = jt->second;
+        if (data_size < value.size()) {
+          return EFI_BUFFER_TOO_SMALL;
+        }
+        if (Data == nullptr) {
+          return EFI_INVALID_PARAMETER;
+        }
+        auto data = machine.create_ptr<void>((std::uint64_t)Data);
+        std::memcpy(data.get(), value.data(), value.size());
+        return EFI_SUCCESS;
+      }
+    }
+    return EFI_NOT_FOUND;
   }
 
   EFI_STATUS allocate_pool(EFI_MEMORY_TYPE PoolType, UINTN Size, VOID** Buffer) {
@@ -334,10 +359,35 @@ private:
     return EFI_SUCCESS;
   }
 
+  EFI_STATUS set_variable(CHAR16* VariableName, EFI_GUID* VendorGuid, UINT32 Attributes, UINTN DataSize, VOID* Data) {
+    // Attributes is not implemented
+
+    if (VariableName == nullptr || VendorGuid == nullptr || Data == nullptr) {
+      return EFI_INVALID_PARAMETER;
+    }
+
+    std::u16string_view variable_name = machine.create_ptr<char16_t>((std::uint64_t)VariableName).get();
+    if (variable_name.size() == 0) {
+      return EFI_INVALID_PARAMETER;
+    }
+
+    const EFI_GUID& vendor_guid = *machine.create_ptr<EFI_GUID>((std::uint64_t)VendorGuid);
+    void* data = machine.create_ptr<void>((std::uint64_t)Data).get();
+
+    if (DataSize != 0) {
+      variables[vendor_guid][std::u16string{variable_name}] = std::vector<char>(static_cast<char*>(data), static_cast<char*>(data)+DataSize);
+    } else {
+      variables[vendor_guid].erase(std::u16string{variable_name});
+    }
+
+    return EFI_SUCCESS;
+  }
+
 public:
   Machine machine;
   std::pmr::monotonic_buffer_resource mbr;
   std::pmr::unsynchronized_pool_resource upr;
   std::unordered_map<EFI_HANDLE, std::unordered_map<EFI_GUID, MachinePtr<void>>> handle_db;
   std::size_t handle_counter = 1;  // contains the next usable EFI_HANDLE
+  std::unordered_map<EFI_GUID, std::unordered_map<std::u16string, std::vector<char>>> variables;
 };

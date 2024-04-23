@@ -19,6 +19,7 @@ enum class UIUAPITag {
   LocateProtocol,
   InstallProtocolInterface,
   GetRNG,
+  SetVariable,
 };
 
 template <UIUAPITag N>
@@ -82,4 +83,10 @@ template <>
 struct UIUAPIFn<UIUAPITag::GetRNG> {
   using R = EFI_STATUS;
   using Args = std::tuple<EFI_RNG_PROTOCOL*, EFI_RNG_ALGORITHM*, UINTN, UINT8*>;
+};
+
+template <>
+struct UIUAPIFn<UIUAPITag::SetVariable> {
+  using R = EFI_STATUS;
+  using Args = std::tuple<CHAR16*, EFI_GUID*, UINT32, UINTN, VOID*>;
 };
