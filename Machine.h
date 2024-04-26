@@ -76,7 +76,7 @@ struct Machine {
     vm = kvm.create_vm();
     vcpu = vm.create_vcpu(0);
     vcpu_run = KVMRun(kvm, vcpu);
-    memory = {static_cast<std::byte*>(mmap(0, 0x1'0000'0000, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED|MAP_ANONYMOUS, -1, 0)), 0x1'0000'0000};
+    memory = {static_cast<std::byte*>(mmap(0, 0x1000'0000, PROT_READ|PROT_WRITE|PROT_EXEC, MAP_SHARED|MAP_ANONYMOUS, -1, 0)), 0x1000'0000};
     if (memory.data() == MAP_FAILED) {
       throw std::system_error(errno, std::generic_category());
     }

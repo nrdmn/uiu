@@ -1,5 +1,7 @@
 #include "API.h"
 
+#include <cstring>  // memset
+
 template <UIUAPITag T>
 auto uiuapifn() {
   using Fn = UIUAPIFn<T>;
@@ -34,6 +36,12 @@ extern "C" [[noreturn]] EFIAPI void _start(EFI_STATUS (EFIAPI *efi_main)(EFI_HAN
   wchar_t vendor[] = L"UIU";
 
   SIMPLE_TEXT_OUTPUT_MODE out_mode = {};
+  for (int i = 0; i < (sizeof(out_mode)/8); i++) {
+    auto& p = ((uint64_t*)&out_mode)[i];
+    if (p == 0) {
+      p = i + 0xf6f6'f6f6'f6f6'f6f6;
+    }
+  }
 
   EFI_SIMPLE_TEXT_OUT_PROTOCOL stop = {
     .Reset = EFI_TEXT_RESET(&trap),
@@ -59,9 +67,9 @@ extern "C" [[noreturn]] EFIAPI void _start(EFI_STATUS (EFIAPI *efi_main)(EFI_HAN
     .RaiseTPL = EFI_RAISE_TPL(&trap),
     .RestoreTPL = EFI_RESTORE_TPL(&trap),
 
-    .AllocatePages = EFI_ALLOCATE_PAGES(&trap),
+    .AllocatePages = uiuapifn<UIUAPITag::AllocatePages>(),
     .FreePages = EFI_FREE_PAGES(&trap),
-    .GetMemoryMap = EFI_GET_MEMORY_MAP(&trap),
+    .GetMemoryMap = uiuapifn<UIUAPITag::GetMemoryMap>(),
     .AllocatePool = uiuapifn<UIUAPITag::AllocatePool>(),  // 0x40
     .FreePool = uiuapifn<UIUAPITag::FreePool>(),  // 0x48
 
@@ -85,7 +93,7 @@ extern "C" [[noreturn]] EFIAPI void _start(EFI_STATUS (EFIAPI *efi_main)(EFI_HAN
     .StartImage = EFI_IMAGE_START(&trap),
     .Exit = EFI_EXIT(&trap),
     .UnloadImage = EFI_IMAGE_UNLOAD(&trap),
-    .ExitBootServices = EFI_EXIT_BOOT_SERVICES(&trap),
+    .ExitBootServices = uiuapifn<UIUAPITag::ExitBootServices>(),
 
     .GetNextMonotonicCount = EFI_GET_NEXT_MONOTONIC_COUNT(&trap),
     .Stall = EFI_STALL(&trap),
@@ -159,16 +167,44 @@ extern "C" [[noreturn]] EFIAPI void _start(EFI_STATUS (EFIAPI *efi_main)(EFI_HAN
     .NumberOfTableEntries = 0,
     .ConfigurationTable = 0,
   };
+  for (int i = 0; i < (sizeof(st)/8); i++) {
+    auto& p = ((uint64_t*)&st)[i];
+    if (p == 0) {
+      p = i + 0xf7f7'f7f7'f7f7'f7f7;
+    }
+  }
 
   EFI_RNG_PROTOCOL rng_proto = {
     .GetInfo = EFI_RNG_GET_INFO(&trap),
     .GetRNG = uiuapifn<UIUAPITag::GetRNG>(),
   };
 
+  EFI_LOADED_IMAGE_PROTOCOL lip_proto = {
+    .ImageBase = (void*)0x10'0000,
+    .ImageSize = 5283136,
+  };
+  for (int i = 0; i < (sizeof(lip_proto)/8); i++) {
+    auto& p = ((uint64_t*)&lip_proto)[i];
+    if (p == 0) {
+      p = i + 0xf9f9'f9f9'f9f9'f9f9;
+    }
+  }
+  char16_t opt[] = {0};
+  lip_proto.LoadOptions = &opt;
+
   EFI_HANDLE handle = nullptr;
 
+  EFI_GUID lip_guid = LOADED_IMAGE_PROTOCOL;
+  uiuapifn<UIUAPITag::InstallProtocolInterface>()(&handle, &lip_guid, EFI_NATIVE_INTERFACE, (void*)&lip_proto);
   EFI_GUID rng_guid = EFI_RNG_PROTOCOL_GUID;
   uiuapifn<UIUAPITag::InstallProtocolInterface>()(&handle, &rng_guid, EFI_NATIVE_INTERFACE, (void*)&rng_proto);
+
+  wchar_t secureboot[] = L"SecureBoot";
+  char zero = 0;
+  wchar_t setupmode[] = L"SetupMode";
+  EFI_GUID securebootguid{0x8be4df61, 0x93ca, 0x11d2, {0xaa, 0x0d, 0x00, 0xe0, 0x98, 0x03, 0x2b, 0x8c}};
+  uiuapifn<UIUAPITag::SetVariable>()(secureboot, &securebootguid, (UINT32)0, (UINTN)1, (void*)&zero);
+  uiuapifn<UIUAPITag::SetVariable>()(setupmode, &securebootguid, (UINT32)0, (UINTN)1, (void*)&zero);
 
   uiuapifn<UIUAPITag::Exit>()(efi_main(handle, &st));
 }

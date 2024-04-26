@@ -20,6 +20,9 @@ enum class UIUAPITag {
   InstallProtocolInterface,
   GetRNG,
   SetVariable,
+  GetMemoryMap,
+  AllocatePages,
+  ExitBootServices,
 };
 
 template <UIUAPITag N>
@@ -89,4 +92,22 @@ template <>
 struct UIUAPIFn<UIUAPITag::SetVariable> {
   using R = EFI_STATUS;
   using Args = std::tuple<CHAR16*, EFI_GUID*, UINT32, UINTN, VOID*>;
+};
+
+template <>
+struct UIUAPIFn<UIUAPITag::GetMemoryMap> {
+  using R = EFI_STATUS;
+  using Args = std::tuple<UINTN*, EFI_MEMORY_DESCRIPTOR*, UINTN*, UINTN*, UINT32*>;
+};
+
+template <>
+struct UIUAPIFn<UIUAPITag::AllocatePages> {
+  using R = EFI_STATUS;
+  using Args = std::tuple<EFI_ALLOCATE_TYPE, EFI_MEMORY_TYPE, UINTN, EFI_PHYSICAL_ADDRESS*>;
+};
+
+template <>
+struct UIUAPIFn<UIUAPITag::ExitBootServices> {
+  using R = EFI_STATUS;
+  using Args = std::tuple<EFI_HANDLE, UINTN>;
 };

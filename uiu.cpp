@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
   kvm_userspace_memory_region region{
     .slot = 0,
     .guest_phys_addr = 0,
-    .memory_size = 0x1'0000'0000,
+    .memory_size = 0x1000'0000,
     .userspace_addr = std::bit_cast<std::uint64_t>(memory),
   };
   uiu.machine.vm.set_user_memory_region(region);
@@ -131,9 +131,9 @@ int main(int argc, char** argv) {
     pml4[0] = 0x7 | pdpt_addr;
     pdpt[0] = 0x7 | pd_addr;
     pd[0] = 0x87;*/
-    std::uint64_t pml4_addr = 0x1000;
+    std::uint64_t pml4_addr = 0xf1000;
     std::uint64_t* pml4 = (std::uint64_t*)((char*)memory + pml4_addr);
-    std::uint64_t pdpt_addr = 0x2000;
+    std::uint64_t pdpt_addr = 0xf2000;
     std::uint64_t* pdpt = (std::uint64_t*)((char*)memory + pdpt_addr);
     pml4[0] = 0x7 | pdpt_addr;
     pdpt[0] = 0x87;

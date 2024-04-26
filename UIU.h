@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstring>
 #include <fmt/format.h>
+#include <fmt/ranges.h>
 #include <locale>  // std::wstring_convert
 #include <memory_resource>
 #include <string>
@@ -57,6 +58,10 @@ inline auto format_as(const EFI_GUID& guid) {
     str += " (EFI_UGA_PROTOCOL_GUID)";
   } else if (guid == EFI_GUID(EFI_PCI_IO_PROTOCOL_GUID)) {
     str += " (EFI_PCI_IO_PROTOCOL_GUID)";
+  } else if (guid == EFI_GUID(EFI_UNICODE_COLLATION_PROTOCOL_GUID)) {
+    str += " (EFI_UNICODE_COLLATION_PROTOCOL_GUID)";
+  } else if (guid == EFI_GUID{0x8be4df61, 0x93ca, 0x11d2, {0xaa, 0x0d, 0x00, 0xe0, 0x98, 0x03, 0x2b, 0x8c}}) {
+    str += " (EFI_GLOBAL_VARIABLE_GUID)";
   }
   return str;
 }
@@ -104,20 +109,22 @@ class UIU {
 public:
   // MEMORY MAP
   //
-  // 0x00001000 0x00001fff PML4
-  // 0x00002000 0x00002fff PDPT
-  // 0x00003000 0x00003fff PD
+  // ...
   //
   // 0x00010000 ...        Start
+  //
+  // 0x000f1000 0x000f1fff PML4
+  // 0x000f2000 0x000f2fff PDPT
   //
   // 0x00100000 ...        App
   //
   // ...        0x04000000 Stack
-  // 0x05000000 0x0fffffff Pool
+  //
+  // 0x0a000000 0x0fffffff Pool
 
   UIU(KVM& kvm)
       : machine(kvm),
-        mbr(machine.create_ptr<void*>(0x500'0000).get(), 0x1'0000'0000 - 0x500'0000),
+        mbr(machine.create_ptr<void*>(0xa00'0000).get(), 0x1000'0000 - 0xa00'0000),
         upr(&mbr) {}
 
   MachinePtr<void> allocate(std::size_t size, std::size_t align = 8) {
@@ -127,8 +134,8 @@ public:
   }
 
   void deallocate(MachinePtr<void>&& ptr, std::size_t align = 8) {
-    auto size = ptr.template cast<std::uint64_t>()[-1];
-    upr.deallocate((ptr.template cast<std::uint64_t>()-1).get(), size+8, std::min(8zu, align));
+    //auto size = ptr.template cast<std::uint64_t>()[-1];
+    //upr.deallocate((ptr.template cast<std::uint64_t>()-1).get(), size+8, std::min(8zu, align));
   }
 
   template <typename T, typename... Args>
@@ -242,8 +249,17 @@ private:
     case GetRNG:
       handle_io_call.operator()<GetRNG>(&UIU::get_rng);
       break;
+    case GetMemoryMap:
+      handle_io_call.operator()<GetMemoryMap>(&UIU::get_memory_map);
+      break;
+    case AllocatePages:
+      handle_io_call.operator()<AllocatePages>(&UIU::allocate_pages);
+      break;
     case SetVariable:
       handle_io_call.operator()<SetVariable>(&UIU::set_variable);
+      break;
+    case ExitBootServices:
+      handle_io_call.operator()<ExitBootServices>(&UIU::exit_boot_services);
       break;
     default:
       std::terminate();
@@ -252,6 +268,7 @@ private:
   }
 
   EFI_STATUS handle_protocol(EFI_HANDLE Handle, EFI_GUID* Protocol, VOID** Interface) {
+    fmt::println(stderr, "handle_protocol");
     if (Handle == nullptr || Protocol == nullptr || Interface == nullptr) {
       return EFI_INVALID_PARAMETER;
     }
@@ -277,12 +294,15 @@ private:
       return EFI_INVALID_PARAMETER;
     }
     auto protocol = *machine.create_ptr<EFI_GUID>((std::uint64_t)Protocol);
+    fmt::println(stderr, "locate_protocol {}", protocol);
     for (auto& [handle, guids] : handle_db) {
       if (auto it = guids.find(protocol); it != guids.end()) {
         *machine.create_ptr<void*>((std::uint64_t)Interface) = (void*)(std::uint64_t)it->second;
+        fmt::println(stderr, "locate_protocol success");
         return EFI_SUCCESS;
       }
     }
+    fmt::println(stderr, "locate_protocol not found");
     return EFI_NOT_FOUND;
   }
 
@@ -309,6 +329,7 @@ private:
   }
 
   EFI_STATUS get_variable(CHAR16* VariableName, EFI_GUID* VendorGuid, UINT32* Attributes, UINTN* DataSize, VOID* Data) {
+    fmt::println(stderr, "get_variable");
     // Attributes is not implemented
 
     if (VariableName == nullptr || VendorGuid == nullptr || DataSize == nullptr) {
@@ -316,6 +337,7 @@ private:
     }
     std::u16string_view variable_name = machine.create_ptr<char16_t>((std::uint64_t)VariableName).get();
     const EFI_GUID& vendor_guid = *machine.create_ptr<EFI_GUID>((std::uint64_t)VendorGuid);
+    fmt::println(stderr, " -> {} / {}", std::wstring_convert<std::codecvt_utf8<char16_t>, char16_t>{}.to_bytes(variable_name.begin(), variable_name.end()), vendor_guid);
     UINTN& data_size = *machine.create_ptr<UINTN>((std::uint64_t)DataSize);
     if (auto it = variables.find(vendor_guid); it != variables.end()) {
       if (auto jt = it->second.find(std::u16string{variable_name}); jt != it->second.end()) {
@@ -328,6 +350,7 @@ private:
         }
         auto data = machine.create_ptr<void>((std::uint64_t)Data);
         std::memcpy(data.get(), value.data(), value.size());
+        fmt::println(stderr, " -> = {::#04x}", std::span<unsigned char>(static_cast<unsigned char*>(data.get()), static_cast<unsigned char*>(data.get())+data_size));
         return EFI_SUCCESS;
       }
     }
@@ -335,17 +358,22 @@ private:
   }
 
   EFI_STATUS allocate_pool(EFI_MEMORY_TYPE PoolType, UINTN Size, VOID** Buffer) {
+    fmt::println(stderr, "allocate_pool");
     auto alloc = allocate(Size);
     *(machine.create_ptr<std::uint64_t>((std::uint64_t)Buffer)) = std::uint64_t{alloc};
     return EFI_SUCCESS;
   }
 
   EFI_STATUS free_pool(VOID* Buffer) {
+    fmt::println(stderr, "free_pool");
     deallocate(machine.create_ptr<void>((std::uint64_t)Buffer));
     return EFI_SUCCESS;
   }
 
   EFI_STATUS locate_handle(EFI_LOCATE_SEARCH_TYPE SearchType, EFI_GUID* Protocol, VOID* SearchKey, UINTN* BufferSize, EFI_HANDLE* Buffer) {
+    fmt::println(stderr, "locate_handle");
+    auto guid = *machine.create_ptr<EFI_GUID>((std::uint64_t)Protocol);
+    fmt::println(stderr, "  {}", guid);
     return EFI_NOT_FOUND;
   }
 
@@ -356,10 +384,77 @@ private:
   }
 
   EFI_STATUS get_rng(EFI_RNG_PROTOCOL*, EFI_RNG_ALGORITHM*, UINTN RNGValueLength, UINT8* RNGValue) {
+    fmt::println(stderr, "get_rng");
+    return EFI_SUCCESS;
+  }
+
+  EFI_STATUS get_memory_map(UINTN* MemoryMapSize, EFI_MEMORY_DESCRIPTOR* MemoryMap, UINTN* MapKey, UINTN* DescriptorSize, UINT32* DescriptorVersion) {
+    fmt::println("get_memory_map");
+    auto memory_map_size = machine.create_ptr<UINTN>((std::uint64_t)MemoryMapSize);
+    auto memory_map = machine.create_ptr<EFI_MEMORY_DESCRIPTOR>((std::uint64_t)MemoryMap);
+    auto map_key = machine.create_ptr<UINTN>((std::uint64_t)MapKey);
+    auto descriptor_size = machine.create_ptr<UINTN>((std::uint64_t)DescriptorSize);
+    auto descriptor_version = machine.create_ptr<UINT32>((std::uint64_t)DescriptorVersion);
+
+    EFI_MEMORY_DESCRIPTOR map[]{
+      {
+        .Type = EfiConventionalMemory,
+        .PhysicalStart = 0,
+        .VirtualStart = 0,
+        .NumberOfPages = 256,
+        .Attribute = 0,
+      },
+      {
+        .Type = EfiReservedMemoryType,
+        .PhysicalStart = 0x10'0000,
+        .VirtualStart = 0x10'0000,
+        .NumberOfPages = 16128,
+        .Attribute = 0,
+      },
+      {
+        .Type = EfiConventionalMemory,
+        .PhysicalStart = 0x400'0000,
+        .VirtualStart = 0x400'0000,
+        .NumberOfPages = 24576,
+        .Attribute = 0,
+      },
+      {
+        .Type = EfiReservedMemoryType,
+        .PhysicalStart = 0xa00'0000,
+        .VirtualStart = 0xa00'0000,
+        .NumberOfPages = 24575,
+        .Attribute = 0,
+      },
+    };
+
+    if (*memory_map_size < sizeof(map)) {
+      *memory_map_size = sizeof(map);
+      return EFI_BUFFER_TOO_SMALL;
+    }
+
+    *memory_map_size = sizeof(map);
+    memcpy(memory_map.get(), map, sizeof(map));
+    *map_key = 1;
+    *descriptor_size = sizeof(EFI_MEMORY_DESCRIPTOR);
+    *descriptor_version = EFI_MEMORY_DESCRIPTOR_VERSION;
+    return EFI_SUCCESS;
+  }
+
+  EFI_STATUS allocate_pages(EFI_ALLOCATE_TYPE Type, EFI_MEMORY_TYPE MemoryType, UINTN Pages, EFI_PHYSICAL_ADDRESS* Memory) {
+    fmt::println(stderr, "allocate_pages Type={} MemoryType={} Pages={}", std::to_underlying(Type), std::to_underlying(MemoryType), Pages);
+    if (Type != EFI_ALLOCATE_TYPE::AllocateAddress) {
+      // not implemented
+      std::terminate();
+    }
+    if (MemoryType != EFI_MEMORY_TYPE::EfiLoaderData) {
+      // not implemented
+      std::terminate();
+    }
     return EFI_SUCCESS;
   }
 
   EFI_STATUS set_variable(CHAR16* VariableName, EFI_GUID* VendorGuid, UINT32 Attributes, UINTN DataSize, VOID* Data) {
+    fmt::println(stderr, "set_variable");
     // Attributes is not implemented
 
     if (VariableName == nullptr || VendorGuid == nullptr || Data == nullptr) {
@@ -374,6 +469,8 @@ private:
     const EFI_GUID& vendor_guid = *machine.create_ptr<EFI_GUID>((std::uint64_t)VendorGuid);
     void* data = machine.create_ptr<void>((std::uint64_t)Data).get();
 
+    fmt::println(stderr, " -> {} / {} = {::#04x}", std::wstring_convert<std::codecvt_utf8<char16_t>, char16_t>{}.to_bytes(variable_name.begin(), variable_name.end()), vendor_guid, std::span<unsigned char>(static_cast<unsigned char*>(data), static_cast<unsigned char*>(data)+DataSize));
+
     if (DataSize != 0) {
       variables[vendor_guid][std::u16string{variable_name}] = std::vector<char>(static_cast<char*>(data), static_cast<char*>(data)+DataSize);
     } else {
@@ -381,6 +478,14 @@ private:
     }
 
     return EFI_SUCCESS;
+  }
+
+  EFI_STATUS exit_boot_services(EFI_HANDLE, UINTN) {
+    fmt::println(stderr, "exit_boot_services");
+    std::string x;
+    fmt::println(stderr, "application wants to call ExitBootServices(), continue? [y/n]");
+    std::cin >> x;
+    std::terminate();
   }
 
 public:
