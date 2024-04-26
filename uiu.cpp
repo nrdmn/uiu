@@ -17,6 +17,10 @@ extern "C" {
 #include "Machine.h"
 #include "Rflags.h"
 #include "UIU.h"
+#include "CR0.h"
+#include "CR3.h"
+#include "CR4.h"
+#include "EFER.h"
 
 
 // vvvvvvvvvvvvvvvvv PE LOADER vvvvvvvvvvvvvvvvvvvvv
@@ -133,10 +137,31 @@ int main(int argc, char** argv) {
     std::uint64_t* pdpt = (std::uint64_t*)((char*)memory + pdpt_addr);
     pml4[0] = 0x7 | pdpt_addr;
     pdpt[0] = 0x87;
+
+    CR0 cr0;
+    cr0.set_pe();
+    cr0.set_mp();
+    cr0.set_et();
+    cr0.set_ne();
+    cr0.set_wp();
+    cr0.set_am();
+    cr0.set_pg();
+    sregs.cr0 = cr0;
+
     sregs.cr3 = pml4_addr;
-    sregs.cr4 = 0x6a0;
-    sregs.cr0 = 0b1000'0000'0000'0101'0000'0000'0011'0011;
-    sregs.efer = (1u<<8) | (1u<<10);
+
+    CR4 cr4;
+    cr4.set_pae();
+    cr4.set_pge();
+    cr4.set_osfxsr();
+    cr4.set_osxmmexcpt();
+    sregs.cr4 = cr4;
+
+    EFER efer;
+    efer.set_lme();
+    efer.set_lma();
+    sregs.efer = efer;
+
     kvm_segment seg{
       .base = 0,
       .limit = 0xffff'ffff,
