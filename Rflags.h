@@ -31,7 +31,7 @@ struct Rflags {
   }
 
   constexpr void set_cf() {
-    value &= CF;
+    value |= CF;
   }
 
   constexpr bool get_pf() const {
@@ -39,7 +39,7 @@ struct Rflags {
   }
 
   constexpr void set_pf() {
-    value &= PF;
+    value |= PF;
   }
 
   constexpr bool get_af() const {
@@ -47,7 +47,7 @@ struct Rflags {
   }
 
   constexpr void set_af() {
-    value &= AF;
+    value |= AF;
   }
 
   constexpr bool get_zf() const {
@@ -55,7 +55,7 @@ struct Rflags {
   }
 
   constexpr void set_zf() {
-    value &= ZF;
+    value |= ZF;
   }
 
   constexpr bool get_sf() const {
@@ -63,7 +63,7 @@ struct Rflags {
   }
 
   constexpr void set_sf() {
-    value &= SF;
+    value |= SF;
   }
 
   constexpr bool get_tf() const {
@@ -71,7 +71,7 @@ struct Rflags {
   }
 
   constexpr void set_tf() {
-    value &= TF;
+    value |= TF;
   }
 
   constexpr bool get_if() const {
@@ -79,7 +79,7 @@ struct Rflags {
   }
 
   constexpr void set_if() {
-    value &= IF;
+    value |= IF;
   }
 
   constexpr bool get_df() const {
@@ -87,7 +87,7 @@ struct Rflags {
   }
 
   constexpr void set_df() {
-    value &= DF;
+    value |= DF;
   }
 
   constexpr bool get_of() const {
@@ -95,7 +95,7 @@ struct Rflags {
   }
 
   constexpr void set_of() {
-    value &= OF;
+    value |= OF;
   }
 
   constexpr int get_iopl() const {
@@ -106,12 +106,12 @@ struct Rflags {
 
   constexpr void set_iopl(int iopl) {
     if (iopl & 1) {
-      value &= IOPL_L;
+      value |= IOPL_L;
     } else {
       value &= ~IOPL_L;
     }
     if (iopl & 2) {
-      value &= IOPL_H;
+      value |= IOPL_H;
     } else {
       value &= ~IOPL_H;
     }
@@ -122,7 +122,7 @@ struct Rflags {
   }
 
   constexpr void set_nt() {
-    value &= NT;
+    value |= NT;
   }
 
   constexpr bool get_rf() const {
@@ -130,7 +130,7 @@ struct Rflags {
   }
 
   constexpr void set_rf() {
-    value &= RF;
+    value |= RF;
   }
 
   constexpr bool get_vm() const {
@@ -138,7 +138,7 @@ struct Rflags {
   }
 
   constexpr void set_vm() {
-    value &= VM;
+    value |= VM;
   }
 
   constexpr bool get_ac() const {
@@ -146,7 +146,7 @@ struct Rflags {
   }
 
   constexpr void set_ac() {
-    value &= AC;
+    value |= AC;
   }
 
   constexpr bool get_vif() const {
@@ -154,7 +154,7 @@ struct Rflags {
   }
 
   constexpr void set_vif() {
-    value &= VIF;
+    value |= VIF;
   }
 
   constexpr bool get_vip() const {
@@ -162,7 +162,7 @@ struct Rflags {
   }
 
   constexpr void set_vip() {
-    value &= VIP;
+    value |= VIP;
   }
 
   constexpr bool get_id() const {
@@ -170,7 +170,7 @@ struct Rflags {
   }
 
   constexpr void set_id() {
-    value &= ID;
+    value |= ID;
   }
 
   constexpr operator std::uint64_t() const {
