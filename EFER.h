@@ -21,12 +21,22 @@ struct EFER {
     return *this;
   }
 
+  constexpr EFER& clear_sce() {
+    value &= ~SCE;
+    return *this;
+  }
+
   constexpr bool get_lme() const {
     return value & LME;
   }
 
   constexpr EFER& set_lme() {
     value |= LME;
+    return *this;
+  }
+
+  constexpr EFER& clear_lme() {
+    value &= ~LME;
     return *this;
   }
 
@@ -39,12 +49,22 @@ struct EFER {
     return *this;
   }
 
+  constexpr EFER& clear_lma() {
+    value &= ~LMA;
+    return *this;
+  }
+
   constexpr bool get_nxe() const {
     return value & NXE;
   }
 
   constexpr EFER& set_nxe() {
     value |= NXE;
+    return *this;
+  }
+
+  constexpr EFER& clear_nxe() {
+    value &= ~NXE;
     return *this;
   }
 

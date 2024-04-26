@@ -20,12 +20,22 @@ struct CR3 {
     return *this;
   }
 
+  constexpr CR3& clear_pwt() {
+    value &= ~PWT;
+    return *this;
+  }
+
   constexpr bool get_pcd() const {
     return value & PCD;
   }
 
   constexpr CR3& set_pcd() {
     value |= PCD;
+    return *this;
+  }
+
+  constexpr CR3& clear_pcd() {
+    value &= ~PCD;
     return *this;
   }
 

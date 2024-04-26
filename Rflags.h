@@ -35,12 +35,22 @@ struct Rflags {
     return *this;
   }
 
+  constexpr Rflags& clear_cf() {
+    value &= ~CF;
+    return *this;
+  }
+
   constexpr bool get_pf() const {
     return value & PF;
   }
 
   constexpr Rflags& set_pf() {
     value |= PF;
+    return *this;
+  }
+
+  constexpr Rflags& clear_pf() {
+    value &= ~PF;
     return *this;
   }
 
@@ -53,12 +63,22 @@ struct Rflags {
     return *this;
   }
 
+  constexpr Rflags& clear_af() {
+    value &= ~AF;
+    return *this;
+  }
+
   constexpr bool get_zf() const {
     return value & ZF;
   }
 
   constexpr Rflags& set_zf() {
     value |= ZF;
+    return *this;
+  }
+
+  constexpr Rflags& clear_zf() {
+    value &= ~ZF;
     return *this;
   }
 
@@ -71,12 +91,22 @@ struct Rflags {
     return *this;
   }
 
+  constexpr Rflags& clear_sf() {
+    value &= ~SF;
+    return *this;
+  }
+
   constexpr bool get_tf() const {
     return value & TF;
   }
 
   constexpr Rflags& set_tf() {
     value |= TF;
+    return *this;
+  }
+
+  constexpr Rflags& clear_tf() {
+    value &= ~TF;
     return *this;
   }
 
@@ -89,6 +119,11 @@ struct Rflags {
     return *this;
   }
 
+  constexpr Rflags& clear_if() {
+    value &= ~IF;
+    return *this;
+  }
+
   constexpr bool get_df() const {
     return value & DF;
   }
@@ -98,12 +133,22 @@ struct Rflags {
     return *this;
   }
 
+  constexpr Rflags& clear_df() {
+    value &= ~DF;
+    return *this;
+  }
+
   constexpr bool get_of() const {
     return value & OF;
   }
 
   constexpr Rflags& set_of() {
     value |= OF;
+    return *this;
+  }
+
+  constexpr Rflags& clear_of() {
+    value &= ~OF;
     return *this;
   }
 
@@ -136,12 +181,22 @@ struct Rflags {
     return *this;
   }
 
+  constexpr Rflags& clear_nt() {
+    value &= ~NT;
+    return *this;
+  }
+
   constexpr bool get_rf() const {
     return value & RF;
   }
 
   constexpr Rflags& set_rf() {
     value |= RF;
+    return *this;
+  }
+
+  constexpr Rflags& clear_rf() {
+    value &= ~RF;
     return *this;
   }
 
@@ -154,12 +209,22 @@ struct Rflags {
     return *this;
   }
 
+  constexpr Rflags& clear_vm() {
+    value &= ~VM;
+    return *this;
+  }
+
   constexpr bool get_ac() const {
     return value & AC;
   }
 
   constexpr Rflags& set_ac() {
     value |= AC;
+    return *this;
+  }
+
+  constexpr Rflags& clear_ac() {
+    value &= ~AC;
     return *this;
   }
 
@@ -172,6 +237,11 @@ struct Rflags {
     return *this;
   }
 
+  constexpr Rflags& clear_vif() {
+    value &= ~VIF;
+    return *this;
+  }
+
   constexpr bool get_vip() const {
     return value & VIP;
   }
@@ -181,12 +251,22 @@ struct Rflags {
     return *this;
   }
 
+  constexpr Rflags& clear_vip() {
+    value &= ~VIP;
+    return *this;
+  }
+
   constexpr bool get_id() const {
     return value & ID;
   }
 
   constexpr Rflags& set_id() {
     value |= ID;
+    return *this;
+  }
+
+  constexpr Rflags& clear_id() {
+    value &= ~ID;
     return *this;
   }
 

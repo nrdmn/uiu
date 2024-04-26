@@ -28,12 +28,22 @@ struct CR0 {
     return *this;
   }
 
+  constexpr CR0& clear_pe() {
+    value &= ~PE;
+    return *this;
+  }
+
   constexpr bool get_mp() const {
     return value & MP;
   }
 
   constexpr CR0& set_mp() {
     value |= MP;
+    return *this;
+  }
+
+  constexpr CR0& clear_mp() {
+    value &= ~MP;
     return *this;
   }
 
@@ -46,12 +56,22 @@ struct CR0 {
     return *this;
   }
 
+  constexpr CR0& clear_em() {
+    value &= ~EM;
+    return *this;
+  }
+
   constexpr bool get_ts() const {
     return value & TS;
   }
 
   constexpr CR0& set_ts() {
     value |= TS;
+    return *this;
+  }
+
+  constexpr CR0& clear_ts() {
+    value &= ~TS;
     return *this;
   }
 
@@ -64,12 +84,22 @@ struct CR0 {
     return *this;
   }
 
+  constexpr CR0& clear_et() {
+    value &= ~ET;
+    return *this;
+  }
+
   constexpr bool get_ne() const {
     return value & NE;
   }
 
   constexpr CR0& set_ne() {
     value |= NE;
+    return *this;
+  }
+
+  constexpr CR0& clear_ne() {
+    value &= ~NE;
     return *this;
   }
 
@@ -82,12 +112,22 @@ struct CR0 {
     return *this;
   }
 
+  constexpr CR0& clear_wp() {
+    value &= ~WP;
+    return *this;
+  }
+
   constexpr bool get_am() const {
     return value & AM;
   }
 
   constexpr CR0& set_am() {
     value |= AM;
+    return *this;
+  }
+
+  constexpr CR0& clear_am() {
+    value &= ~AM;
     return *this;
   }
 
@@ -100,6 +140,11 @@ struct CR0 {
     return *this;
   }
 
+  constexpr CR0& clear_nw() {
+    value &= ~NW;
+    return *this;
+  }
+
   constexpr bool get_cd() const {
     return value & CD;
   }
@@ -109,12 +154,22 @@ struct CR0 {
     return *this;
   }
 
+  constexpr CR0& clear_cd() {
+    value &= ~CD;
+    return *this;
+  }
+
   constexpr bool get_pg() const {
     return value & PG;
   }
 
   constexpr CR0& set_pg() {
     value |= PG;
+    return *this;
+  }
+
+  constexpr CR0& clear_pg() {
+    value &= ~PG;
     return *this;
   }
 

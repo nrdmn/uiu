@@ -42,12 +42,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_vme() {
+    value &= ~VME;
+    return *this;
+  }
+
   constexpr bool get_pvi() const {
     return value & PVI;
   }
 
   constexpr CR4& set_pvi() {
     value |= PVI;
+    return *this;
+  }
+
+  constexpr CR4& clear_pvi() {
+    value &= ~PVI;
     return *this;
   }
 
@@ -60,12 +70,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_tsd() {
+    value &= ~TSD;
+    return *this;
+  }
+
   constexpr bool get_de() const {
     return value & DE;
   }
 
   constexpr CR4& set_de() {
     value |= DE;
+    return *this;
+  }
+
+  constexpr CR4& clear_de() {
+    value &= ~DE;
     return *this;
   }
 
@@ -78,12 +98,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_pse() {
+    value &= ~PSE;
+    return *this;
+  }
+
   constexpr bool get_pae() const {
     return value & PAE;
   }
 
   constexpr CR4& set_pae() {
     value |= PAE;
+    return *this;
+  }
+
+  constexpr CR4& clear_pae() {
+    value &= ~PAE;
     return *this;
   }
 
@@ -96,12 +126,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_mce() {
+    value &= ~MCE;
+    return *this;
+  }
+
   constexpr bool get_pge() const {
     return value & PGE;
   }
 
   constexpr CR4& set_pge() {
     value |= PGE;
+    return *this;
+  }
+
+  constexpr CR4& clear_pge() {
+    value &= ~PGE;
     return *this;
   }
 
@@ -114,12 +154,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_pce() {
+    value &= ~PCE;
+    return *this;
+  }
+
   constexpr bool get_osfxsr() const {
     return value & OSFXSR;
   }
 
   constexpr CR4& set_osfxsr() {
     value |= OSFXSR;
+    return *this;
+  }
+
+  constexpr CR4& clear_osfxsr() {
+    value &= ~OSFXSR;
     return *this;
   }
 
@@ -132,12 +182,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_osxmmexcpt() {
+    value &= ~OSXMMEXCPT;
+    return *this;
+  }
+
   constexpr bool get_umip() const {
     return value & UMIP;
   }
 
   constexpr CR4& set_umip() {
     value |= UMIP;
+    return *this;
+  }
+
+  constexpr CR4& clear_umip() {
+    value &= ~UMIP;
     return *this;
   }
 
@@ -150,12 +210,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_la57() {
+    value &= ~LA57;
+    return *this;
+  }
+
   constexpr bool get_vmxe() const {
     return value & VMXE;
   }
 
   constexpr CR4& set_vmxe() {
     value |= VMXE;
+    return *this;
+  }
+
+  constexpr CR4& clear_vmxe() {
+    value &= ~VMXE;
     return *this;
   }
 
@@ -168,12 +238,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_smxe() {
+    value &= ~SMXE;
+    return *this;
+  }
+
   constexpr bool get_fsgsbase() const {
     return value & FSGSBASE;
   }
 
   constexpr CR4& set_fsgsbase() {
     value |= FSGSBASE;
+    return *this;
+  }
+
+  constexpr CR4& clear_fsgsbase() {
+    value &= ~FSGSBASE;
     return *this;
   }
 
@@ -186,12 +266,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_pcide() {
+    value &= ~PCIDE;
+    return *this;
+  }
+
   constexpr bool get_osxsave() const {
     return value & OSXSAVE;
   }
 
   constexpr CR4& set_osxsave() {
     value |= OSXSAVE;
+    return *this;
+  }
+
+  constexpr CR4& clear_osxsave() {
+    value &= ~OSXSAVE;
     return *this;
   }
 
@@ -204,12 +294,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_kl() {
+    value &= ~KL;
+    return *this;
+  }
+
   constexpr bool get_smep() const {
     return value & SMEP;
   }
 
   constexpr CR4& set_smep() {
     value |= SMEP;
+    return *this;
+  }
+
+  constexpr CR4& clear_smep() {
+    value &= ~SMEP;
     return *this;
   }
 
@@ -222,12 +322,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_smap() {
+    value &= ~SMAP;
+    return *this;
+  }
+
   constexpr bool get_pke() const {
     return value & PKE;
   }
 
   constexpr CR4& set_pke() {
     value |= PKE;
+    return *this;
+  }
+
+  constexpr CR4& clear_pke() {
+    value &= ~PKE;
     return *this;
   }
 
@@ -240,6 +350,11 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_cet() {
+    value &= ~CET;
+    return *this;
+  }
+
   constexpr bool get_pks() const {
     return value & PKS;
   }
@@ -249,12 +364,22 @@ struct CR4 {
     return *this;
   }
 
+  constexpr CR4& clear_pks() {
+    value &= ~PKS;
+    return *this;
+  }
+
   constexpr bool get_uintr() const {
     return value & UINTR;
   }
 
   constexpr CR4& set_uintr() {
     value |= UINTR;
+    return *this;
+  }
+
+  constexpr CR4& clear_uintr() {
+    value &= ~UINTR;
     return *this;
   }
 
