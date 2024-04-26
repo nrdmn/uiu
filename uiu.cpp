@@ -116,8 +116,6 @@ int main(int argc, char** argv) {
   uiu.machine.vm.set_user_memory_region(region);
 
   auto sregs = uiu.machine.vcpu.get_sregs();
-  sregs.cs.base = 0;
-  sregs.cs.selector = 0;
   {
     // See page 3041
     /*std::uint64_t pml4_addr = 0x1000;
@@ -155,8 +153,6 @@ int main(int argc, char** argv) {
     seg.type = 3;
     seg.selector = 2<<3;
     sregs.ds = sregs.es = sregs.fs = sregs.gs = sregs.ss = seg;
-
-    sregs.cr4 |= (1<<13);
   }
   uiu.machine.vcpu.set_sregs(sregs);
 
