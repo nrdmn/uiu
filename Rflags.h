@@ -30,72 +30,81 @@ struct Rflags {
     return value & CF;
   }
 
-  constexpr void set_cf() {
+  constexpr Rflags& set_cf() {
     value |= CF;
+    return *this;
   }
 
   constexpr bool get_pf() const {
     return value & PF;
   }
 
-  constexpr void set_pf() {
+  constexpr Rflags& set_pf() {
     value |= PF;
+    return *this;
   }
 
   constexpr bool get_af() const {
     return value & AF;
   }
 
-  constexpr void set_af() {
+  constexpr Rflags& set_af() {
     value |= AF;
+    return *this;
   }
 
   constexpr bool get_zf() const {
     return value & ZF;
   }
 
-  constexpr void set_zf() {
+  constexpr Rflags& set_zf() {
     value |= ZF;
+    return *this;
   }
 
   constexpr bool get_sf() const {
     return value & SF;
   }
 
-  constexpr void set_sf() {
+  constexpr Rflags& set_sf() {
     value |= SF;
+    return *this;
   }
 
   constexpr bool get_tf() const {
     return value & TF;
   }
 
-  constexpr void set_tf() {
+  constexpr Rflags& set_tf() {
     value |= TF;
+    return *this;
   }
 
   constexpr bool get_if() const {
     return value & IF;
   }
 
-  constexpr void set_if() {
+  constexpr Rflags& set_if() {
     value |= IF;
+    return *this;
   }
 
   constexpr bool get_df() const {
     return value & DF;
   }
 
-  constexpr void set_df() {
+  constexpr Rflags& set_df() {
     value |= DF;
+    return *this;
   }
 
   constexpr bool get_of() const {
     return value & OF;
   }
 
-  constexpr void set_of() {
+  constexpr Rflags& set_of() {
     value |= OF;
+    return *this;
   }
 
   constexpr int get_iopl() const {
@@ -104,7 +113,7 @@ struct Rflags {
     return (iopl_h << 1) | iopl_l;
   }
 
-  constexpr void set_iopl(int iopl) {
+  constexpr Rflags& set_iopl(int iopl) {
     if (iopl & 1) {
       value |= IOPL_L;
     } else {
@@ -115,62 +124,70 @@ struct Rflags {
     } else {
       value &= ~IOPL_H;
     }
+    return *this;
   }
 
   constexpr bool get_nt() const {
     return value & NT;
   }
 
-  constexpr void set_nt() {
+  constexpr Rflags& set_nt() {
     value |= NT;
+    return *this;
   }
 
   constexpr bool get_rf() const {
     return value & RF;
   }
 
-  constexpr void set_rf() {
+  constexpr Rflags& set_rf() {
     value |= RF;
+    return *this;
   }
 
   constexpr bool get_vm() const {
     return value & VM;
   }
 
-  constexpr void set_vm() {
+  constexpr Rflags& set_vm() {
     value |= VM;
+    return *this;
   }
 
   constexpr bool get_ac() const {
     return value & AC;
   }
 
-  constexpr void set_ac() {
+  constexpr Rflags& set_ac() {
     value |= AC;
+    return *this;
   }
 
   constexpr bool get_vif() const {
     return value & VIF;
   }
 
-  constexpr void set_vif() {
+  constexpr Rflags& set_vif() {
     value |= VIF;
+    return *this;
   }
 
   constexpr bool get_vip() const {
     return value & VIP;
   }
 
-  constexpr void set_vip() {
+  constexpr Rflags& set_vip() {
     value |= VIP;
+    return *this;
   }
 
   constexpr bool get_id() const {
     return value & ID;
   }
 
-  constexpr void set_id() {
+  constexpr Rflags& set_id() {
     value |= ID;
+    return *this;
   }
 
   constexpr operator std::uint64_t() const {

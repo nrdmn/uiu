@@ -16,32 +16,36 @@ struct EFER {
     return value & SCE;
   }
 
-  constexpr void set_sce() {
+  constexpr EFER& set_sce() {
     value |= SCE;
+    return *this;
   }
 
   constexpr bool get_lme() const {
     return value & LME;
   }
 
-  constexpr void set_lme() {
+  constexpr EFER& set_lme() {
     value |= LME;
+    return *this;
   }
 
   constexpr bool get_lma() const {
     return value & LMA;
   }
 
-  constexpr void set_lma() {
+  constexpr EFER& set_lma() {
     value |= LMA;
+    return *this;
   }
 
   constexpr bool get_nxe() const {
     return value & NXE;
   }
 
-  constexpr void set_nxe() {
+  constexpr EFER& set_nxe() {
     value |= NXE;
+    return *this;
   }
 
   constexpr operator std::uint64_t() const {

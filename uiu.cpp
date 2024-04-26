@@ -138,29 +138,23 @@ int main(int argc, char** argv) {
     pml4[0] = 0x7 | pdpt_addr;
     pdpt[0] = 0x87;
 
-    CR0 cr0;
-    cr0.set_pe();
-    cr0.set_mp();
-    cr0.set_et();
-    cr0.set_ne();
-    cr0.set_wp();
-    cr0.set_am();
-    cr0.set_pg();
-    sregs.cr0 = cr0;
+    sregs.cr0 = CR0{}.set_pe()
+                     .set_mp()
+                     .set_et()
+                     .set_ne()
+                     .set_wp()
+                     .set_am()
+                     .set_pg();
 
     sregs.cr3 = pml4_addr;
 
-    CR4 cr4;
-    cr4.set_pae();
-    cr4.set_pge();
-    cr4.set_osfxsr();
-    cr4.set_osxmmexcpt();
-    sregs.cr4 = cr4;
+    sregs.cr4 = CR4{}.set_pae()
+                     .set_pge()
+                     .set_osfxsr()
+                     .set_osxmmexcpt();
 
-    EFER efer;
-    efer.set_lme();
-    efer.set_lma();
-    sregs.efer = efer;
+    sregs.efer = EFER{}.set_lme()
+                       .set_lma();
 
     kvm_segment seg{
       .base = 0,

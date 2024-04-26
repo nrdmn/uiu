@@ -23,88 +23,99 @@ struct CR0 {
     return value & PE;
   }
 
-  constexpr void set_pe() {
+  constexpr CR0& set_pe() {
     value |= PE;
+    return *this;
   }
 
   constexpr bool get_mp() const {
     return value & MP;
   }
 
-  constexpr void set_mp() {
+  constexpr CR0& set_mp() {
     value |= MP;
+    return *this;
   }
 
   constexpr bool get_em() const {
     return value & EM;
   }
 
-  constexpr void set_em() {
+  constexpr CR0& set_em() {
     value |= EM;
+    return *this;
   }
 
   constexpr bool get_ts() const {
     return value & TS;
   }
 
-  constexpr void set_ts() {
+  constexpr CR0& set_ts() {
     value |= TS;
+    return *this;
   }
 
   constexpr bool get_et() const {
     return value & ET;
   }
 
-  constexpr void set_et() {
+  constexpr CR0& set_et() {
     value |= ET;
+    return *this;
   }
 
   constexpr bool get_ne() const {
     return value & NE;
   }
 
-  constexpr void set_ne() {
+  constexpr CR0& set_ne() {
     value |= NE;
+    return *this;
   }
 
   constexpr bool get_wp() const {
     return value & WP;
   }
 
-  constexpr void set_wp() {
+  constexpr CR0& set_wp() {
     value |= WP;
+    return *this;
   }
 
   constexpr bool get_am() const {
     return value & AM;
   }
 
-  constexpr void set_am() {
+  constexpr CR0& set_am() {
     value |= AM;
+    return *this;
   }
 
   constexpr bool get_nw() const {
     return value & NW;
   }
 
-  constexpr void set_nw() {
+  constexpr CR0& set_nw() {
     value |= NW;
+    return *this;
   }
 
   constexpr bool get_cd() const {
     return value & CD;
   }
 
-  constexpr void set_cd() {
+  constexpr CR0& set_cd() {
     value |= CD;
+    return *this;
   }
 
   constexpr bool get_pg() const {
     return value & PG;
   }
 
-  constexpr void set_pg() {
+  constexpr CR0& set_pg() {
     value |= PG;
+    return *this;
   }
 
   constexpr operator std::uint64_t() const {

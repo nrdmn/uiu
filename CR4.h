@@ -37,200 +37,225 @@ struct CR4 {
     return value & VME;
   }
 
-  constexpr void set_vme() {
+  constexpr CR4& set_vme() {
     value &= VME;
+    return *this;
   }
 
   constexpr bool get_pvi() const {
     return value & PVI;
   }
 
-  constexpr void set_pvi() {
+  constexpr CR4& set_pvi() {
     value |= PVI;
+    return *this;
   }
 
   constexpr bool get_tsd() const {
     return value & TSD;
   }
 
-  constexpr void set_tsd() {
+  constexpr CR4& set_tsd() {
     value |= TSD;
+    return *this;
   }
 
   constexpr bool get_de() const {
     return value & DE;
   }
 
-  constexpr void set_de() {
+  constexpr CR4& set_de() {
     value |= DE;
+    return *this;
   }
 
   constexpr bool get_pse() const {
     return value & PSE;
   }
 
-  constexpr void set_pse() {
+  constexpr CR4& set_pse() {
     value |= PSE;
+    return *this;
   }
 
   constexpr bool get_pae() const {
     return value & PAE;
   }
 
-  constexpr void set_pae() {
+  constexpr CR4& set_pae() {
     value |= PAE;
+    return *this;
   }
 
   constexpr bool get_mce() const {
     return value & MCE;
   }
 
-  constexpr void set_mce() {
+  constexpr CR4& set_mce() {
     value |= MCE;
+    return *this;
   }
 
   constexpr bool get_pge() const {
     return value & PGE;
   }
 
-  constexpr void set_pge() {
+  constexpr CR4& set_pge() {
     value |= PGE;
+    return *this;
   }
 
   constexpr bool get_pce() const {
     return value & PCE;
   }
 
-  constexpr void set_pce() {
+  constexpr CR4& set_pce() {
     value |= PCE;
+    return *this;
   }
 
   constexpr bool get_osfxsr() const {
     return value & OSFXSR;
   }
 
-  constexpr void set_osfxsr() {
+  constexpr CR4& set_osfxsr() {
     value |= OSFXSR;
+    return *this;
   }
 
   constexpr bool get_osxmmexcpt() const {
     return value & OSXMMEXCPT;
   }
 
-  constexpr void set_osxmmexcpt() {
+  constexpr CR4& set_osxmmexcpt() {
     value |= OSXMMEXCPT;
+    return *this;
   }
 
   constexpr bool get_umip() const {
     return value & UMIP;
   }
 
-  constexpr void set_umip() {
+  constexpr CR4& set_umip() {
     value |= UMIP;
+    return *this;
   }
 
   constexpr bool get_la57() const {
     return value & LA57;
   }
 
-  constexpr void set_la57() {
+  constexpr CR4& set_la57() {
     value |= LA57;
+    return *this;
   }
 
   constexpr bool get_vmxe() const {
     return value & VMXE;
   }
 
-  constexpr void set_vmxe() {
+  constexpr CR4& set_vmxe() {
     value |= VMXE;
+    return *this;
   }
 
   constexpr bool get_smxe() const {
     return value & SMXE;
   }
 
-  constexpr void set_smxe() {
+  constexpr CR4& set_smxe() {
     value |= SMXE;
+    return *this;
   }
 
   constexpr bool get_fsgsbase() const {
     return value & FSGSBASE;
   }
 
-  constexpr void set_fsgsbase() {
+  constexpr CR4& set_fsgsbase() {
     value |= FSGSBASE;
+    return *this;
   }
 
   constexpr bool get_pcide() const {
     return value & PCIDE;
   }
 
-  constexpr void set_pcide() {
+  constexpr CR4& set_pcide() {
     value |= PCIDE;
+    return *this;
   }
 
   constexpr bool get_osxsave() const {
     return value & OSXSAVE;
   }
 
-  constexpr void set_osxsave() {
+  constexpr CR4& set_osxsave() {
     value |= OSXSAVE;
+    return *this;
   }
 
   constexpr bool get_kl() const {
     return value & KL;
   }
 
-  constexpr void set_kl() {
+  constexpr CR4& set_kl() {
     value |= KL;
+    return *this;
   }
 
   constexpr bool get_smep() const {
     return value & SMEP;
   }
 
-  constexpr void set_smep() {
+  constexpr CR4& set_smep() {
     value |= SMEP;
+    return *this;
   }
 
   constexpr bool get_smap() const {
     return value & SMAP;
   }
 
-  constexpr void set_smap() {
+  constexpr CR4& set_smap() {
     value |= SMAP;
+    return *this;
   }
 
   constexpr bool get_pke() const {
     return value & PKE;
   }
 
-  constexpr void set_pke() {
+  constexpr CR4& set_pke() {
     value |= PKE;
+    return *this;
   }
 
   constexpr bool get_cet() const {
     return value & CET;
   }
 
-  constexpr void set_cet() {
+  constexpr CR4& set_cet() {
     value |= CET;
+    return *this;
   }
 
   constexpr bool get_pks() const {
     return value & PKS;
   }
 
-  constexpr void set_pks() {
+  constexpr CR4& set_pks() {
     value |= PKS;
+    return *this;
   }
 
   constexpr bool get_uintr() const {
     return value & UINTR;
   }
 
-  constexpr void set_uintr() {
+  constexpr CR4& set_uintr() {
     value |= UINTR;
+    return *this;
   }
 
   constexpr operator std::uint64_t() const {

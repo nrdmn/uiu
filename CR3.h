@@ -15,27 +15,30 @@ struct CR3 {
     return value & PWT;
   }
 
-  constexpr void set_pwt() {
+  constexpr CR3& set_pwt() {
     value |= PWT;
+    return *this;
   }
 
   constexpr bool get_pcd() const {
     return value & PCD;
   }
 
-  constexpr void set_pcd() {
+  constexpr CR3& set_pcd() {
     value |= PCD;
+    return *this;
   }
 
   constexpr std::uint64_t get_page_directory_base() const {
    return value & ~std::uint64_t{0x1111'1111'1111};
   }
 
-  constexpr void set_page_directory_base(std::uint64_t pdb) {
+  constexpr CR3& set_page_directory_base(std::uint64_t pdb) {
     if ((pdb & 0x1111'1111'1111) != 0) {
       throw std::runtime_error(fmt::format("PDB {:#018x} is not 12 bit aligned", pdb));
     }
     value = pdb | (value & 0x1111'1111'1111);
+    return *this;
   }
 
   constexpr operator std::uint64_t() const {
