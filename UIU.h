@@ -104,20 +104,16 @@ class UIU {
 public:
   // MEMORY MAP
   //
-  // 0x00001000 0x00001fff PML4
-  // 0x00002000 0x00002fff PDPT
-  // 0x00003000 0x00003fff PD
-  //
   // 0x00010000 ...        Start
-  //
-  // 0x00100000 ...        App
-  //
-  // ...        0x04000000 Stack
-  // 0x05000000 0x0fffffff Pool
+  // 0x000f1000 0x000f1fff PML4
+  // 0x000f2000 0x000f2fff PDPT
+  // ...        0x1ffffff0 Stack
+  // 0x20000000 0x37ffffff Pool
+  // 0x38000000 0x3fffffff App
 
   UIU(KVM& kvm)
       : machine(kvm),
-        mbr(machine.create_ptr<void*>(0x500'0000).get(), 0x1'0000'0000 - 0x500'0000),
+        mbr(machine.create_ptr<void*>(0x2000'0000).get(), 0x3800'0000 - 0x2000'0000),
         upr(&mbr) {}
 
   MachinePtr<void> allocate(std::size_t size, std::size_t align = 8) {

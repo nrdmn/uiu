@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
   kvm_userspace_memory_region region{
     .slot = 0,
     .guest_phys_addr = 0,
-    .memory_size = 0x1'0000'0000,
+    .memory_size = 0x4000'0000,
     .userspace_addr = std::bit_cast<std::uint64_t>(memory),
   };
   uiu.machine.vm.set_user_memory_region(region);
@@ -131,9 +131,9 @@ int main(int argc, char** argv) {
     pml4[0] = 0x7 | pdpt_addr;
     pdpt[0] = 0x7 | pd_addr;
     pd[0] = 0x87;*/
-    std::uint64_t pml4_addr = 0x1000;
+    std::uint64_t pml4_addr = 0xf1000;
     std::uint64_t* pml4 = (std::uint64_t*)((char*)memory + pml4_addr);
-    std::uint64_t pdpt_addr = 0x2000;
+    std::uint64_t pdpt_addr = 0xf2000;
     std::uint64_t* pdpt = (std::uint64_t*)((char*)memory + pdpt_addr);
     pml4[0] = 0x7 | pdpt_addr;
     pdpt[0] = 0x87;
@@ -158,7 +158,7 @@ int main(int argc, char** argv) {
 
     kvm_segment seg{
       .base = 0,
-      .limit = 0xffff'ffff,
+      .limit = 0x3fff'ffff,
       .selector = 1<<3,
       .type = 11,
       .present = 1,
@@ -192,14 +192,14 @@ int main(int argc, char** argv) {
   }
 
   void* start = (char*)0x1'0000 + load(std::move(wrapper), (char*)memory + 0x1'0000);
-  void* efi_main_kvm = (char*)0x10'0000 + load(std::move(ifs), (char*)memory + 0x10'0000);
+  void* efi_main_kvm = (char*)0x3800'0000 + load(std::move(ifs), (char*)memory + 0x3800'0000);
   ((unsigned char*)memory)[0] = 0xf4;
 
   kvm_regs regs{
     .rax = 2,
     .rbx = 2,
     .rcx = std::uint64_t(efi_main_kvm),
-    .rsp = 0x400'0000,
+    .rsp = 0x1fff'fff0,
     .rip = std::uint64_t(start),
     .rflags = Rflags{},
   };
