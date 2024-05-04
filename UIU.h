@@ -241,6 +241,9 @@ private:
     case SetVariable:
       handle_io_call.operator()<SetVariable>(&UIU::set_variable);
       break;
+    case LocateHandleBuffer:
+      handle_io_call.operator()<LocateHandleBuffer>(&UIU::locate_handle_buffer);
+      break;
     default:
       std::terminate();
     }
@@ -376,6 +379,24 @@ private:
       variables[vendor_guid].erase(std::u16string{variable_name});
     }
 
+    return EFI_SUCCESS;
+  }
+
+  EFI_STATUS locate_handle_buffer(EFI_LOCATE_SEARCH_TYPE SearchType, EFI_GUID* Protocol, VOID* SearchKey, UINTN* NoHandles, EFI_HANDLE** Buffer) {
+    if (SearchType != EFI_LOCATE_SEARCH_TYPE::ByProtocol) {
+      // not implemented
+      std::terminate();
+    }
+    const auto& protocol = *machine.create_ptr<EFI_GUID>((std::uint64_t)Protocol);
+    std::vector<EFI_HANDLE> handles;
+    for (const auto& [handle, protos] : handle_db) {
+      if (protos.contains(protocol)) {
+        handles.push_back(handle);
+      }
+    }
+    allocate_pool(EFI_MEMORY_TYPE::EfiReservedMemoryType, sizeof(EFI_HANDLE)*handles.size(), (void**)Buffer);
+    auto* buffer = machine.create_ptr<EFI_HANDLE>((std::uint64_t)machine.create_ptr<EFI_HANDLE*>((std::uint64_t)Buffer)).get();
+    std::copy(handles.begin(), handles.end(), buffer);
     return EFI_SUCCESS;
   }
 
